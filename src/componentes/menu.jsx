@@ -35,7 +35,6 @@ import {
           >
             <MDBIcon icon="bars" fas />
           </MDBNavbarToggler>
-  
           <MDBCollapse navbar open={openBasic}>
             <MDBNavbarNav className="mr-auto mb-2 mb-lg-0">
               <MDBNavbarItem>
@@ -49,9 +48,6 @@ import {
                     </Link>
                     <Link to="/listadofestivales" style={{ color: "#4f4f4f" }}>
                       <MDBDropdownItem link>Listado de festivales</MDBDropdownItem>
-                    </Link>
-                    <Link to="/buscarfestival" style={{ color: "#4f4f4f" }}>
-                      <MDBDropdownItem link>Buscar festival</MDBDropdownItem>
                     </Link>
                   </MDBDropdownMenu>
                 </MDBDropdown>
@@ -67,9 +63,6 @@ import {
                     </Link>
                     <Link to="/listadoactividades" style={{ color: "#4f4f4f" }}>
                       <MDBDropdownItem link>Listado de pedidos</MDBDropdownItem>
-                    </Link>
-                    <Link to="/buscaractividad" style={{ color: "#4f4f4f" }}>
-                      <MDBDropdownItem link>Buscar actividad</MDBDropdownItem>
                     </Link>
                   </MDBDropdownMenu>
                 </MDBDropdown>
