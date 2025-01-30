@@ -7,17 +7,18 @@ import { apiUrl } from "../config";
 //FECHA
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 function ModificarFestival() {
     const params = useParams();
     const [datos, setDatos] = useState({
-        idfestival: params.idfestival,
+        idFestival: params.idFestival || "",
         nombre: "",
         ciudad: "",
         numEntradas: "",
         precio: "",
-        fechaInicio: null,
-        fechaFin: null,
+        fechaInicio: dayjs(),
+        fechaFin: dayjs(),
     });
     const [validacion, setValidacion] = useState({
         nombre: false, // true si hay error
@@ -31,13 +32,22 @@ function ModificarFestival() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if(!params.idFestival){
+            alert("Falta el id del festival");
+        }
         console.log(params);
         async function getFestivalById() {
-            let response = await fetch(apiUrl + "/festival/" + datos.idfestival);
+            console.log("Vamos a buscar el festival con id:", datos.idFestival);
+
+            let response = await fetch(apiUrl + "/festival/" + datos.idFestival);
             if (response.ok) {
                 let data = await response.json();
                 console.log("Datos de la API:", data.datos);
-                setDatos(data.datos);
+                setDatos({
+                    ...data.datos,
+                    fechaInicio: dayjs(data.datos.fechaInicio),
+                    fechaFin: dayjs(data.datos.fechaFin)
+                });
             } else if (response.status === 404) {
                 let data = await response.json();
                 alert(data.mensaje);
@@ -56,7 +66,7 @@ function ModificarFestival() {
             // Enviamos los datos mediante fetch
             try {
                 console.log("Vamos a hacer fetch");
-                const response = await fetch(apiUrl + "/festival/" + datos.idfestival, {
+                const response = await fetch(apiUrl + "/festival/" + datos.idFestival, {
                     method: "PUT", // "PATCH"
                     headers: {
                         "Content-Type": "application/json",
@@ -111,6 +121,23 @@ function ModificarFestival() {
         }
         //VALIDAR FECHAS
         if (datos.fechaInicio && datos.fechaFin) {
+            if (datos.fechaFin.isBefore(datos.fechaInicio)) {
+                validacionAux.fechaFin = true;
+                validado = false;
+            }
+        }
+        
+        if (datos.fechaInicio) {
+            const hoy = dayjs().startOf('day');  // Normaliza la fecha actual a medianoche
+            if (datos.fechaInicio.isBefore(hoy)) {
+                validacionAux.fechaInicio = true;
+                validado = false;
+            }
+        }
+
+
+        /*
+        if (datos.fechaInicio && datos.fechaFin) {
             if (new Date(datos.fechaFin) < new Date(datos.fechaInicio)) {
                 validacionAux.fechaFin = true;
                 validado = false;
@@ -126,7 +153,7 @@ function ModificarFestival() {
                 validacionAux.fechaInicio = true;
                 validado = false;
             }
-        }
+        }*/
 
         /*
         let expPrecio = /^\d{1,2,3}(\.\d{1,2})?$/;

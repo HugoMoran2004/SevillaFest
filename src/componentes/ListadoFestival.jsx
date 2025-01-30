@@ -52,7 +52,7 @@ function ListadoFestivales() {
     return (
         <>
             <Typography variant="h4" align="center" sx={{ mt: 2 }}>
-                Listado de platos
+                Festivales 
             </Typography>
 
             <Box sx={{ mx: 4 }}>

@@ -36,7 +36,7 @@ let router = createBrowserRouter([
         element: <AltaFestival />,
       },
       {
-        path: "modificarfestival/:nombrefestival",
+        path: "modificarfestival/:idfestival",
         element: <ModificarFestival />,
       },
       {
