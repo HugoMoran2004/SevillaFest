@@ -167,6 +167,7 @@ function ModificarFestival() {
             validacionAux.precio = true;
             validado = false;
         }*/
+       
         //VALIDAR PRECIO
         let expPrecio = /^([0-9]{1,5})(\.\d{1,2})?$/;
         if (expPrecio.test(datos.precio)) {

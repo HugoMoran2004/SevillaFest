@@ -15,10 +15,11 @@ import Home from './pages/Home';
 import AltaFestival from "./componentes/AltaFestival";
 import ListadoFestivales from "./componentes/ListadoFestival";
 import ModificarFestival from "./componentes/ModificarFestival";
+import AltaActividad from "./componentes/AltaActividad";
 //ACTIVIDAD
 /*
 import ListadoActividades from "./componentes/ListadoActividad";
-import AltaActividad from "./componentes/AltaActividad";
+
 import ModificarActividad from "./componentes/ModificarActividad";
 
 "*/
@@ -36,12 +37,16 @@ let router = createBrowserRouter([
         element: <AltaFestival />,
       },
       {
-        path: "modificarfestival/:idfestival",
+        path: "modificarfestival/:idFestival",
         element: <ModificarFestival />,
       },
       {
         path: "listadofestivales",
         element: <ListadoFestivales/>,
+      },
+      {
+        path: "altaactividad",
+        element: <AltaActividad />,
       },
       /*
       {

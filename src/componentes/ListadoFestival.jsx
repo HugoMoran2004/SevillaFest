@@ -18,6 +18,9 @@ import { apiUrl } from "../config";
 function ListadoFestivales() {
 
     const [rows, setRows] = useState([]);
+    const [actividades, setActividades] = useState([]); // Listado de actividades del festival seleccionado
+    const [festivalSeleccionado, setFestivalSeleccionado] = useState(null); // ID del festival seleccionado
+    const [expandido, setExpandido] = useState(false); // Control de expansión del festival
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,6 +52,26 @@ function ListadoFestivales() {
         }
     };
 
+     // Mostrar actividades de un festival cuando se hace clic
+     const handleFestivalClick = async (idFestival) => {
+        // Si el festival ya está expandido, lo colapsamos
+        if (festivalSeleccionado === idFestival) {
+            setExpandido(!expandido);
+            return;
+        }
+
+        // Si no, cargamos las actividades del festival
+        setFestivalSeleccionado(idFestival);
+        setExpandido(true);
+
+        let response = await fetch(apiUrl + "/festival/" + idFestival + "/actividades");
+
+        if (response.ok) {
+            let data = await response.json();
+            setActividades(data.datos); // Asumiendo que el JSON tiene un campo "datos" con las actividades
+        }
+    };
+
     return (
         <>
             <Typography variant="h4" align="center" sx={{ mt: 2 }}>
@@ -69,6 +92,7 @@ function ListadoFestivales() {
                                 <TableCell>FECHA FIN</TableCell>
                                 <TableCell align="center">ELIMINAR</TableCell>
                                 <TableCell align="center">EDITAR</TableCell>
+                                <TableCell align="center">VER ACTIVIDADES</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -101,12 +125,52 @@ function ListadoFestivales() {
                                             <EditNoteIcon fontSize="small" />
                                         </Button>
                                     </TableCell>
+                                    <TableCell>
+                                        <Button onClick={() => handleFestivalClick(row.idFestival)}>
+                                            Ver actividades
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </Box>
+            {/* Mostrar actividades si el festival está seleccionado y expandido */}
+            {expandido && festivalSeleccionado && (
+                <Box sx={{ mt: 2, mx: 4 }}>
+                    <Typography variant="h6">Actividades de Festival:</Typography>
+                    <TableContainer component={Paper} sx={{ mt: 2 }}>
+                        <Table aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>NOMBRE</TableCell>
+                                    <TableCell>DURACION</TableCell>
+                                    <TableCell>DESCRIPCIÓN</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {actividades.length > 0 ? (
+                                    actividades.map((actividad) => (
+                                        <TableRow key={actividad.idActividad}>
+                                            <TableCell>{actividad.nombre}</TableCell>
+                                            <TableCell>{actividad.duracion}</TableCell>
+                                            <TableCell>{actividad.descripcion}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={4} align="center">
+                                            No hay actividades disponibles.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            )}
+
         </>
     );
 
