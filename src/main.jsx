@@ -54,10 +54,6 @@ let router = createBrowserRouter([
         element: <ListadoActividades />,
       },
       {
-        path: "altaactividad",
-        element: <AltaActividad />,
-      },
-      {
         path: "modificaractividad/:idactividad",
         element: <ModificarActividad />,
       },

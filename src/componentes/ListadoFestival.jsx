@@ -1,4 +1,4 @@
-import Table from "@mui/material/Table";
+/*import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
@@ -13,6 +13,13 @@ import Button from "@mui/material/Button";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { useNavigate } from "react-router";
 import { apiUrl } from "../config";
+import Snackbar from "@mui/material";
+import Alert from "@mui/material";*/
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Button, Snackbar, Alert } from "@mui/material";
+import { DeleteForever as DeleteForeverIcon, EditNote as EditNoteIcon } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { apiUrl } from "../config";
 
 
 function ListadoFestivales() {
@@ -21,6 +28,9 @@ function ListadoFestivales() {
     const [actividades, setActividades] = useState([]); // Listado de actividades del festival seleccionado
     const [festivalSeleccionado, setFestivalSeleccionado] = useState(null); // ID del festival seleccionado
     const [expandido, setExpandido] = useState(false); // Control de expansión del festival
+    const [festivalNombre, setFestivalNombre] = useState("");
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [mensaje, setMensaje] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -53,7 +63,7 @@ function ListadoFestivales() {
     };
 
      // Mostrar actividades de un festival cuando se hace clic
-     const handleFestivalClick = async (idFestival) => {
+     const handleFestivalClick = async (idFestival, nombreFestival) => {
         // Si el festival ya está expandido, lo colapsamos
         if (festivalSeleccionado === idFestival) {
             setExpandido(!expandido);
@@ -62,14 +72,33 @@ function ListadoFestivales() {
 
         // Si no, cargamos las actividades del festival
         setFestivalSeleccionado(idFestival);
+        setFestivalNombre(nombreFestival);
         setExpandido(true);
-
-        let response = await fetch(apiUrl + "/festival/" + idFestival + "/actividades");
+        setActividades([]);
+        
+        try{
+            let response = await fetch(apiUrl + "/festival/" + idFestival + "/actividades");
 
         if (response.ok) {
             let data = await response.json();
-            setActividades(data.datos); // Asumiendo que el JSON tiene un campo "datos" con las actividades
+            //setActividades(data.datos); // Asumiendo que el JSON tiene un campo "datos" con las actividades
+            if(data.datos.length === 0){
+                setMensaje("No hay actividades para este festival");
+                setOpenSnackbar(true);
+            }else{
+                setActividades(data.datos);
+            }
+        }else{
+            setMensaje("Error al cargar las actividades del festival");
+            setOpenSnackbar(true);
+        } 
+
+        }catch(error){
+            console.error("Error:", error);
+            setMensaje("Error en la conexion al servidor");
+            setOpenSnackbar(true);
         }
+        
     };
 
     return (
@@ -126,8 +155,8 @@ function ListadoFestivales() {
                                         </Button>
                                     </TableCell>
                                     <TableCell>
-                                        <Button onClick={() => handleFestivalClick(row.idFestival)}>
-                                            Ver actividades
+                                        <Button onClick={() => handleFestivalClick(row.idFestival, row.nombre)}>
+                                            Actividades
                                         </Button>
                                     </TableCell>
                                 </TableRow>
@@ -139,7 +168,7 @@ function ListadoFestivales() {
             {/* Mostrar actividades si el festival está seleccionado y expandido */}
             {expandido && festivalSeleccionado && (
                 <Box sx={{ mt: 2, mx: 4 }}>
-                    <Typography variant="h6">Actividades de Festival:</Typography>
+                    <Typography variant="h6">{festivalNombre} :</Typography>
                     <TableContainer component={Paper} sx={{ mt: 2 }}>
                         <Table aria-label="simple table">
                             <TableHead>
@@ -170,6 +199,16 @@ function ListadoFestivales() {
                     </TableContainer>
                 </Box>
             )}
+
+            <Snackbar
+            open={openSnackbar}
+            autoHideDuration={6000}
+            onClose={() => setOpenSnackbar(false)}
+        >
+            <Alert onClose={() => setOpenSnackbar(false)} severity="info" sx={{ width: '100%' }}>
+                {mensaje}
+            </Alert>
+        </Snackbar>
 
         </>
     );

@@ -8,6 +8,9 @@ import { apiUrl } from "../config";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import "dayjs/locale/es";
+
+dayjs.locale("es");
 
 function ModificarFestival() {
     const params = useParams();
@@ -71,7 +74,7 @@ function ModificarFestival() {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(datos), // JSON.stringify({blocked: true})
+                    body: JSON.stringify(datos), // Datos a enviar
                 });
 
                 if (response.ok) {
@@ -103,19 +106,19 @@ function ModificarFestival() {
             fechaFin: false,
         };
         //VALIDAR NOMBRE
-        if (datos.nombre.length <= 1) {
+        if (datos.nombre.length <= 1 ) {
             // Error en el nombre
             validacionAux.nombre = true;
             // Formulario invalido
             validado = false;
         }
         //VALIDAR CIUDAD
-        if (datos.ciudad.length < 4) {
+        if (datos.ciudad.length < 4 ) {
             validacionAux.ciudad = true;
             validado = false;
         }
         //VALIDAR numEntradas
-        if (datos.numEntradas < 50) {
+        if (datos.numEntradas < 50 || isNaN(datos.numEntradas)) {
             validacionAux.numEntradas = true;
             validado = false;
         }
@@ -129,7 +132,7 @@ function ModificarFestival() {
         
         if (datos.fechaInicio) {
             const hoy = dayjs().startOf('day');  // Normaliza la fecha actual a medianoche
-            if (datos.fechaInicio.isBefore(hoy)) {
+            if (datos.fechaInicio.isBefore(hoy, 'day')) {
                 validacionAux.fechaInicio = true;
                 validado = false;
             }
@@ -169,9 +172,9 @@ function ModificarFestival() {
         }*/
        
         //VALIDAR PRECIO
-        let expPrecio = /^([0-9]{1,5})(\.\d{1,2})?$/;
+        let expPrecio = /^\d{1,5}(\.\d{1,2})?$/;
         if (expPrecio.test(datos.precio)) {
-            if (parseFloat(datos.precio) < 0) {
+            if (parseFloat(datos.precio) < 50 || parseFloat(datos.precio) > 99999.99) {
                 // No permite valores negativos
                 validacionAux.precio = true;
                 validado = false;
@@ -250,6 +253,18 @@ function ModificarFestival() {
                                 "Ciudad requerida. Minimo 4 caracteres"
                             }
                         />
+                         <TextField
+                            id="outlined-basic"
+                            label="numEntradas"
+                            variant="outlined"
+                            name="numEntradas"
+                            value={datos.numEntradas}
+                            onChange={handleChange}
+                            error={validacion.numEntradas}
+                            helperText={
+                                validacion.numEntradas && "Minimo 50 numEntradas"
+                            }
+                        />
                         <TextField
                             id="outlined-basic"
                             label="Precio"
@@ -262,24 +277,12 @@ function ModificarFestival() {
                                 validacion.precio && "Importe incorrecto. [50€ - 99.999,99€]"
                             }
                         />
-
-                        <TextField
-                            id="outlined-basic"
-                            label="numEntradas"
-                            variant="outlined"
-                            name="numEntradas"
-                            value={datos.numEntradas}
-                            onChange={handleChange}
-                            error={validacion.numEntradas}
-                            helperText={
-                                validacion.numEntradas && "Minimo 50 numEntradas"
-                            }
-                        />
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
                             <DatePicker
                                 label="Fecha de Inicio"
                                 value={datos.fechaInicio}
                                 onChange={(handleChangeFechaInicio)}
+                                 inputFormat="DD/MM/YYYY"
                                 renderInput={(params) => <TextField {...params} />}
                                 error={validacion.fechaInicio}
                                 helperText={
@@ -292,6 +295,7 @@ function ModificarFestival() {
                                 label="Fecha de Fin"
                                 value={datos.fechaFin}
                                 onChange={handleChangeFechaFin}
+                                 inputFormat="DD/MM/YYYY"
                                 renderInput={(params) => <TextField {...params} />}
                                 error={validacion.fechaFin}
                                 helperText={
