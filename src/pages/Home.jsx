@@ -1,10 +1,13 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import Menu from "../componentes/menu" 
+import NavBar from "../componentes/NavBar";
 
 function Home(){
+    const location = useLocation();
     return (
         <>
-            <Menu/>
+            <NavBar />
+            {location.pathname === "/" && <Menu />}
             <Outlet />
         </>
     );

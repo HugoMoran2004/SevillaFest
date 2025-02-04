@@ -1,33 +1,20 @@
 import { Typography, TextField, Stack, Button, Alert } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useNavigate } from "react-router";
-// Importamos las variables de entorno
-import { apiUrl } from '../config';
-
-//Snackbar
-import { Snackbar } from '@mui/material';
-
-//MDBoostrap Modal
-import { MDBModal, MDBModalBody, MDBModalHeader, MDBModalFooter,MDBBtn } from "mdb-react-ui-kit";
-
-
-//FECHA
+import { apiUrl } from '../config'; // Importamos las variables de entorno
+import { Snackbar } from '@mui/material'; //Snackbar
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import swal from 'sweetalert';
 import dayjs from "dayjs"
 import "dayjs/locale/es";
 
 dayjs.locale("es");
 
-
-
 function AltaFestival() {
-
-
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [mensaje, setMensaje] = useState("");
-  const [openModal, setOpenModal] = useState(false);
   const [datos, setDatos] = useState({
     nombre: "",
     ciudad: "",
@@ -35,10 +22,9 @@ function AltaFestival() {
     fechaInicio: null,
     fechaFin: null,
     precio: "",
-
   });
   const [validacion, setValidacion] = useState({
-    nombre: false, // true si hay error
+    nombre: false,
     ciudad: false,
     numEntradas: false,
     precio: false,
@@ -52,31 +38,13 @@ function AltaFestival() {
     if (reason === 'clickaway') {
       return;
     }
-
     setOpen(false);
   };
 
-  //Modal
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    //navigate("/"); // Redirige a la página principal cuando se cierra el modal
-  };
+  // Enviamos los datos mediante fetch
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Corregir el error tipográfico
 
-
-  //Boton
-  const handleValidateAndModal =  () => {
-    
-    if(validarDatos()){
-      setOpenModal(true);
-    }else{
-      setMensaje("Error en el formulario. Revise los campos");
-      setOpen(true);
-
-    }
-  };
-
-    // Enviamos los datos mediante fetch
-    const handleConfirmarEnvio = async () => {
     if (validarDatos()) {
       try {
         const response = await fetch(apiUrl + "/festival", {
@@ -89,55 +57,71 @@ function AltaFestival() {
 
         if (response.ok) {
           const respuesta = await response.json();
-          setMensaje(respuesta.mensaje);
-          
-          if (respuesta.ok) {
-            setOpenModal(false);
-            navigate("/"); // Volver a la página principal
+          if (respuesta.ok){
+            swal({
+              title: "Crear Festival",
+              text: "¿Deseas crear este festival?",
+              icon: "info",
+              buttons: ["Cancelar", "Aceptar"],
+            }). then((respuesta) => {
+              if (respuesta) {
+                navigate("/"); // Volver a la página principal
+                swal({
+                text:"Festival creado correctamente",
+                icon: "success"
+              });
+              }
+            }
+            );
+
           }
-        } else{
-          setMensaje("Error en el formulario al crear el festival");
-          setOpen(true);
+          
+          /*if (respuesta.ok) {
+            navigate("/"); // Volver a la página principal
+          }*/ // Comentado para probar el sweetalert
         }
       } catch (error) {
         console.error("Error:", error);
-        setMensaje("Error en la conexion al servidor");
-        setOpen(true);
-        //alert("Error:", error);
+        alert("Error en la conexion al servidor");
+        setMensaje("Error en la conexión al servidor");
+        setOpen(true); // Abre el Snackbar
       }
+    } else {
+      setMensaje("Error en el formulario. Revise los campos");
+      setOpen(true); // Abre el Snackbar si hay errores
     }
   };
 
   function validarDatos() {
-    // En principio, damos por bueno el formulario
     let validado = true;
-    // Estado de la validación auxiliar
     let validacionAux = {
-      nombre: false, // true si hay error
+      nombre: false,
       ciudad: false,
       numEntradas: false,
       precio: false,
       fechaInicio: false,
       fechaFin: false,
     };
-    //VALIDAR NOMBRE
+
+    // VALIDAR NOMBRE
     if (datos.nombre.length <= 1) {
-      // Error en el nombre
       validacionAux.nombre = true;
-      // Formulario invalido
       validado = false;
     }
-    //VALIDAR CIUDAD
+
+    // VALIDAR CIUDAD
     if (datos.ciudad.length < 4) {
       validacionAux.ciudad = true;
       validado = false;
     }
-    //VALIDAR numEntradas
+
+    // VALIDAR numEntradas
     if (datos.numEntradas < 50 || isNaN(datos.numEntradas)) {
       validacionAux.numEntradas = true;
       validado = false;
     }
-    //VALIDAR FECHAS
+
+    // VALIDAR FECHAS
     if (datos.fechaInicio && datos.fechaFin) {
       if (datos.fechaFin.isBefore(datos.fechaInicio)) {
         validacionAux.fechaFin = true;
@@ -146,17 +130,17 @@ function AltaFestival() {
     }
 
     if (datos.fechaInicio) {
-      const hoy = dayjs().startOf('day');  // Normaliza la fecha actual a medianoche
+      const hoy = dayjs().startOf('day');
       if (datos.fechaInicio.isBefore(hoy, 'day')) {
         validacionAux.fechaInicio = true;
         validado = false;
       }
     }
-    //VALIDAR PRECIO
+
+    // VALIDAR PRECIO
     let expPrecio = /^\d{1,5}(\.\d{1,2})?$/;
     if (expPrecio.test(datos.precio)) {
       if (parseFloat(datos.precio) < 50 || parseFloat(datos.precio) > 99999.99) {
-        // No permite valores negativos
         validacionAux.precio = true;
         validado = false;
       }
@@ -165,9 +149,7 @@ function AltaFestival() {
       validado = false;
     }
 
-    // Actualizo el estado de la validacion de los Textfields
     setValidacion(validacionAux);
-    console.log("Formulario valido:", validado);
     return validado;
   }
 
@@ -192,24 +174,14 @@ function AltaFestival() {
     });
   };
 
-
   return (
     <>
       <Typography variant="h4" align="center" sx={{ mt: 2 }}>
         Alta de Festivales
       </Typography>
-      <Grid
-        container
-        spacing={2}
-        sx={{ mt: 2, justifyContent: "center", alignItems: "center" }}
-      >
+      <Grid container spacing={2} sx={{ mt: 2, justifyContent: "center", alignItems: "center" }}>
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <Stack
-            component="form"
-            spacing={2}
-            //onSubmit={handleSubmit}
-            sx={{ mx: 2 }}
-          >
+          <Stack component="form" spacing={2} onSubmit={handleSubmit} sx={{ mx: 2 }}>
             <TextField
               id="outlined-basic"
               label="Nombre"
@@ -218,9 +190,7 @@ function AltaFestival() {
               value={datos.nombre}
               onChange={handleChange}
               error={validacion.nombre}
-              helperText={
-                validacion.nombre && "Nombre incorrecto. Mínimo 2 caracteres"
-              }
+              helperText={validacion.nombre && "Nombre incorrecto. Mínimo 2 caracteres"}
             />
             <TextField
               id="outlined-basic"
@@ -230,10 +200,7 @@ function AltaFestival() {
               value={datos.ciudad}
               error={validacion.ciudad}
               onChange={handleChange}
-              helperText={
-                validacion.ciudad &&
-                "Ciudad requerida. Minimo 4 caracteres"
-              }
+              helperText={validacion.ciudad && "Ciudad requerida. Mínimo 4 caracteres"}
             />
             <TextField
               id="outlined-basic"
@@ -244,9 +211,7 @@ function AltaFestival() {
               value={datos.numEntradas}
               onChange={handleChange}
               error={validacion.numEntradas}
-              helperText={
-                validacion.numEntradas && "Minimo 50 numEntradas"
-              }
+              helperText={validacion.numEntradas && "Mínimo 50 entradas"}
             />
             <TextField
               id="outlined-basic"
@@ -257,24 +222,19 @@ function AltaFestival() {
               value={datos.precio}
               onChange={handleChange}
               error={validacion.precio}
-              helperText={
-                validacion.precio && "Importe incorrecto. [50€ - 99.999,99€]"
-              }
+              helperText={validacion.precio && "Importe incorrecto. [50€ - 99.999,99€]"}
             />
             {/* Componente de Fecha de Inicio */}
             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="es">
               <DatePicker
                 label="Comienza"
                 value={datos.fechaInicio}
-                onChange={(handleChangeFechaInicio)}
+                onChange={handleChangeFechaInicio}
                 inputFormat="DD/MM/YYYY"
                 renderInput={(params) => <TextField {...params} />}
                 error={validacion.fechaInicio}
-                helperText={
-                  validacion.fechaInicio && "Fecha de inicio no inferiro al dia actual"
-                }
+                helperText={validacion.fechaInicio && "Fecha de inicio no puede ser inferior al día actual"}
               />
-
               {/* Componente de Fecha de Fin */}
               <DatePicker
                 label="Finaliza"
@@ -283,32 +243,22 @@ function AltaFestival() {
                 inputFormat="DD/MM/YYYY"
                 renderInput={(params) => <TextField {...params} />}
                 error={validacion.fechaFin}
-                helperText={
-                  validacion.fechaFin && "Fecha de fin no puede ser inferior a la de inicio"
-                }
+                helperText={validacion.fechaFin && "Fecha de fin no puede ser inferior a la de inicio"}
               />
             </LocalizationProvider>
-            <Button variant="contained" /*type="submit"*/ onClick={handleValidateAndModal}>
+            <Button variant="contained" type="submit">
               Aceptar
             </Button>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>{mensaje}</Alert>
+              <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                {mensaje}
+              </Alert>
             </Snackbar>
-
-            <MDBModal show={openModal} tabIndex="-1" setShow={setOpenModal}>
-              <MDBModalHeader>¿Estas seguro?</MDBModalHeader>
-              <MDBModalBody>
-                <Typography>El festival ha sido registrado correctamente.</Typography>
-              </MDBModalBody>
-              <MDBModalFooter>
-                <MDBBtn color="primary" onClick={handleConfirmarEnvio}>Aceptar</MDBBtn>
-                <MDBBtn color="secondary" onClick={handleCloseModal}>Cancelar</MDBBtn>
-              </MDBModalFooter>
-            </MDBModal>   
           </Stack>
         </Grid>
       </Grid>
     </>
   );
 }
+
 export default AltaFestival;

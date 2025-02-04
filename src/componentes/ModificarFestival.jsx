@@ -1,13 +1,15 @@
-import { Typography, TextField, Stack, Button } from "@mui/material";
+import { Typography, TextField, Stack, Button, Snackbar,Alert } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
 import { apiUrl } from "../config";
+import swal from 'sweetalert';
 
 //FECHA
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+
 import "dayjs/locale/es";
 
 dayjs.locale("es");
@@ -33,9 +35,17 @@ function ModificarFestival() {
     });
 
     const navigate = useNavigate();
+    const [openSnackbar, setOpenSnackbar] = useState(false); 
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setOpenSnackbar(false);
+      };
 
     useEffect(() => {
-        if(!params.idFestival){
+        if (!params.idFestival) {
             alert("Falta el id del festival");
         }
         console.log(params);
@@ -53,7 +63,8 @@ function ModificarFestival() {
                 });
             } else if (response.status === 404) {
                 let data = await response.json();
-                alert(data.mensaje);
+                setSnackbarMessage(data.mensaje || "No se encontró el festival");
+                setOpenSnackbar(true);
                 navigate("/"); // Volver a la página principal por ruta erronea
             }
         }
@@ -67,29 +78,48 @@ function ModificarFestival() {
         console.log("Vamos a validar");
         if (validarDatos()) {
             // Enviamos los datos mediante fetch
-            try {
-                console.log("Vamos a hacer fetch");
-                const response = await fetch(apiUrl + "/festival/" + datos.idFestival, {
-                    method: "PUT", // "PATCH"
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(datos), // Datos a enviar
-                });
+            swal({
+                title: "Modificar Festival",
+                text: "¿Deseas modificar este festival?",
+                icon: "info",
+                buttons: ["Cancelar", "Aceptar"],
+            }).then(async (respuesta) => {
+                if (respuesta) {
 
-                if (response.ok) {
-                    // 204 No content
-                    alert("Actualización correcta");
-                    navigate(-1); // Volver a la ruta anterior
-                } else {
-                    // 404 Not Found plato no modificado o no encontrado
-                    const data = await response.json();
-                    alert(data.mensaje);
+                    try {
+                        console.log("Vamos a hacer fetch");
+                        const response = await fetch(apiUrl + "/festival/" + datos.idFestival, {
+                            method: "PUT", // "PATCH"
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(datos), // Datos a enviar
+                        });
+
+                        if (response.ok) {
+                            // 204 No content
+                            swal({
+                                title: "Festival modificado",
+                                text: "El festival ha sido modificado correctamente.",
+                                icon: "success",
+                            });
+                            navigate(-1); // Volver a la ruta anterior
+                        } else {
+                            // 404 Not Found plato no modificado o no encontrado
+                            const data = await response.json();
+                            setSnackbarMessage(data.mensaje || "Ningun campo fue modificado");
+                            setOpenSnackbar(true);
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        swal({
+                            title: "Error",
+                            text: "Hubo un error al intentar modificar los datos del festival.",
+                            icon: "error",
+                        });
+                    }
                 }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Error:", error);
-            }
+            });
         }
     };
 
@@ -106,14 +136,14 @@ function ModificarFestival() {
             fechaFin: false,
         };
         //VALIDAR NOMBRE
-        if (datos.nombre.length <= 1 ) {
+        if (datos.nombre.length <= 1) {
             // Error en el nombre
             validacionAux.nombre = true;
             // Formulario invalido
             validado = false;
         }
         //VALIDAR CIUDAD
-        if (datos.ciudad.length < 4 ) {
+        if (datos.ciudad.length < 4) {
             validacionAux.ciudad = true;
             validado = false;
         }
@@ -129,7 +159,7 @@ function ModificarFestival() {
                 validado = false;
             }
         }
-        
+
         if (datos.fechaInicio) {
             const hoy = dayjs().startOf('day');  // Normaliza la fecha actual a medianoche
             if (datos.fechaInicio.isBefore(hoy, 'day')) {
@@ -137,40 +167,6 @@ function ModificarFestival() {
                 validado = false;
             }
         }
-
-
-        /*
-        if (datos.fechaInicio && datos.fechaFin) {
-            if (new Date(datos.fechaFin) < new Date(datos.fechaInicio)) {
-                validacionAux.fechaFin = true;
-                validado = false;
-            }
-        }
-
-        if (datos.fechaInicio) {
-            const hoy = new Date();
-            // Normalizamos la fecha actual para ignorar horas, minutos y segundos
-            hoy.setHours(0, 0, 0, 0);
-
-            if (new Date(datos.fechaInicio) < hoy) {
-                validacionAux.fechaInicio = true;
-                validado = false;
-            }
-        }*/
-
-        /*
-        let expPrecio = /^\d{1,2,3}(\.\d{1,2})?$/;
-        if (expPrecio.test(datos.precio)) {
-            // Los datos al menos tienen el formato correcto
-            if (parseFloat(datos.precio) < 0.5 || parseFloat(datos.precio) > 50) {
-                validacionAux.precio = true;
-                validado = false;
-            }
-        } else {
-            validacionAux.precio = true;
-            validado = false;
-        }*/
-       
         //VALIDAR PRECIO
         let expPrecio = /^\d{1,5}(\.\d{1,2})?$/;
         if (expPrecio.test(datos.precio)) {
@@ -253,7 +249,7 @@ function ModificarFestival() {
                                 "Ciudad requerida. Minimo 4 caracteres"
                             }
                         />
-                         <TextField
+                        <TextField
                             id="outlined-basic"
                             label="numEntradas"
                             variant="outlined"
@@ -282,7 +278,7 @@ function ModificarFestival() {
                                 label="Fecha de Inicio"
                                 value={datos.fechaInicio}
                                 onChange={(handleChangeFechaInicio)}
-                                 inputFormat="DD/MM/YYYY"
+                                inputFormat="DD/MM/YYYY"
                                 renderInput={(params) => <TextField {...params} />}
                                 error={validacion.fechaInicio}
                                 helperText={
@@ -295,7 +291,7 @@ function ModificarFestival() {
                                 label="Fecha de Fin"
                                 value={datos.fechaFin}
                                 onChange={handleChangeFechaFin}
-                                 inputFormat="DD/MM/YYYY"
+                                inputFormat="DD/MM/YYYY"
                                 renderInput={(params) => <TextField {...params} />}
                                 error={validacion.fechaFin}
                                 helperText={
@@ -309,6 +305,12 @@ function ModificarFestival() {
                     </Stack>
                 </Grid>
             </Grid>
+
+            <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleClose}>
+                          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                            {snackbarMessage}
+                          </Alert>
+                        </Snackbar>
         </>
     );
 }

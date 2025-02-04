@@ -18,6 +18,7 @@ import Alert from "@mui/material";*/
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, Button, Snackbar, Alert } from "@mui/material";
 import { DeleteForever as DeleteForeverIcon, EditNote as EditNoteIcon } from "@mui/icons-material";
 import { useEffect, useState } from "react";
+import swal from 'sweetalert';
 import { useNavigate } from "react-router";
 import { apiUrl } from "../config";
 
@@ -48,18 +49,40 @@ function ListadoFestivales() {
     }, []); // Se ejecuta solo en el primer renderizado
 
     const handleDelete = async (idFestival) => {
-        let response = await fetch(apiUrl + "/festival/" + idFestival, {
-            method: "DELETE",
+        swal({
+            title: "¿Estás seguro?",
+            text: "Una vez eliminado, no podrás recuperar el festival",
+            icon: "warning",
+            buttons: ["Cancelar", "Aceptar"],
+            dangerMode: true,
+        }).then(async (willDelete) => {
+            if (willDelete) {
+                try{
+                    let response = await fetch(apiUrl + "/festival/" + idFestival, {
+                        method: "DELETE",
+                    });
+        
+                    if (response.ok) {
+                        // Utilizando filter creo un array sin el plato borrado
+                        const festivalTrasBorrado = rows.filter(
+                            (festival) => festival.idFestival != idFestival
+                        );
+                        // Establece los datos de nuevo para provocar un renderizado
+                        setRows(festivalTrasBorrado);
+                        swal("El festival ha sido eliminado", {
+                            icon: "success",
+                        });
+                    } else {
+                        swal("Error al eliminar el festival", {
+                            icon: "error",
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error:", error);
+                    openSnackbar(true);
+                }
+            }
         });
-
-        if (response.ok) {
-            // Utilizando filter creo un array sin el plato borrado
-            const festivalTrasBorrado = rows.filter(
-                (festival) => festival.idFestival != idFestival
-            );
-            // Establece los datos de nuevo para provocar un renderizado
-            setRows(festivalTrasBorrado);
-        }
     };
 
      // Mostrar actividades de un festival cuando se hace clic

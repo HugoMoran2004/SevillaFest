@@ -37,17 +37,22 @@ const SeccionMenu = styled(Box)({
 
 const ItemDropdownPersonalizado = styled(MDBDropdownItem)({
   '&:hover': {
+    //backgroundColor: '#2e7d32', // Tono más oscuro en hover
     color: 'white',
   },
   '&:active': {
     backgroundColor: '#004d40',
     color: 'white',
   },
-  fontWeight: 'bold',
-  color: 'white',
-  backgroundColor: '#a5d6a7',
-  borderRadius: '8px',
-  padding: '0.5rem 1rem',
+  '&:focus': {
+    outline: 'none !important',  // Elimina el borde de enfoque
+    boxShadow: 'none !important', // Elimina cualquier sombra al hacer focus
+  },
+  fontWeight: 'bold', // Letra en negrita
+  color: 'white', // Letra blanca
+  backgroundColor: '#a5d6a7', // Fondo claro por defecto
+  borderRadius: '8px', // Bordes redondeados
+  padding: '0.5rem 1rem', // Espaciado para que los items sean más grandes
   textDecoration: 'none',
 });
 
@@ -55,8 +60,11 @@ const MenuDropdownPersonalizado = styled(MDBDropdownMenu)({
   position: 'static',
   color: 'white',
   fontWeight: 'bold',
-  backgroundColor: '#a5d6a7',
-  borderRadius: '8px',
+  backgroundColor: '#a5d6a7', // Tono más claro para el menú dropdown
+  borderRadius: '8px', // Bordes redondeados
+  '&:hover': {
+    backgroundColor: '#a5d6a7', // Mantener el color claro cuando se hace hover
+  },
 });
 
 const BotonDropdownPersonalizado = styled(MDBDropdownToggle)({
@@ -67,22 +75,13 @@ const BotonDropdownPersonalizado = styled(MDBDropdownToggle)({
     color: '#a5d6a7',
   },
   '&:focus': {
-    outline: 'none !important',
-    backgroundColor: 'transparent',
+    outline: 'none !important',  // Elimina el borde de enfoque (focus)
+    backgroundColor: 'transparent', // Elimina el fondo de enfoque
     boxShadow: 'none !important',
   },
   '&:active': {
-    backgroundColor: '#004d40',
+    backgroundColor: '#004d40', // Color al hacer clic
   },
-});
-
-// Carrusel
-const CarruselWrapper = styled('div')({
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'center',
-  marginTop: '20px',
-  marginBottom: '20px',
 });
 
 export default function DrawerMini() {
@@ -96,7 +95,7 @@ export default function DrawerMini() {
   // Cierra el Drawer cuando cambia la ruta
   useEffect(() => {
     setDrawerAbierto(false); // Cerrar el Drawer al cambiar de ruta
-  }, [window.location.pathname]);
+  }, [window.location.pathname]); // Monitorear los cambios en la ruta
 
   return (
     <ContenedorPrincipal>
@@ -137,7 +136,7 @@ export default function DrawerMini() {
               Festivales
             </BotonDropdownPersonalizado>
             <MenuDropdownPersonalizado>
-              <Link to="/altafestival" style={{ color: 'white' }}>
+              <Link to="/altafestival" style={{ color: 'white'}}>
                 <ItemDropdownPersonalizado link>Alta de festivales</ItemDropdownPersonalizado>
               </Link>
               <Link to="/listadofestivales" style={{ color: 'white' }}>
@@ -163,70 +162,7 @@ export default function DrawerMini() {
           </MDBDropdown>
         </SeccionMenu>
       </Drawer>
-
-      {/* Aquí agregamos el Carrusel */}
-      <CarruselWrapper>
-        <div id="carouselBasicExample" className="carousel slide carousel-fade" data-mdb-ride="carousel">
-          {/* Indicadores */}
-          <div className="carousel-indicators">
-            <button
-              type="button"
-              data-mdb-target="#carouselBasicExample"
-              data-mdb-slide-to="0"
-              className="active"
-              aria-current="true"
-              aria-label="Slide 1"
-            ></button>
-            <button
-              type="button"
-              data-mdb-target="#carouselBasicExample"
-              data-mdb-slide-to="1"
-              aria-label="Slide 2"
-            ></button>
-            <button
-              type="button"
-              data-mdb-target="#carouselBasicExample"
-              data-mdb-slide-to="2"
-              aria-label="Slide 3"
-            ></button>
-          </div>
-
-          {/* Inner */}
-          <div className="carousel-inner">
-            <div className="carousel-item active">
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/Slides/img%20(15).webp" className="d-block w-100" alt="Sunset Over the City" />
-              <div className="carousel-caption d-none d-md-block">
-                <h5>First slide label</h5>
-                <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-              </div>
-            </div>
-            <div className="carousel-item">
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/Slides/img%20(22).webp" className="d-block w-100" alt="Canyon at Night" />
-              <div className="carousel-caption d-none d-md-block">
-                <h5>Second slide label</h5>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-              </div>
-            </div>
-            <div className="carousel-item">
-              <img src="https://mdbcdn.b-cdn.net/img/Photos/Slides/img%20(23).webp" className="d-block w-100" alt="Cliff Above a Stormy Sea" />
-              <div className="carousel-caption d-none d-md-block">
-                <h5>Third slide label</h5>
-                <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Controls */}
-          <button className="carousel-control-prev" type="button" data-mdb-target="#carouselBasicExample" data-mdb-slide="prev">
-            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span className="visually-hidden">Previous</span>
-          </button>
-          <button className="carousel-control-next" type="button" data-mdb-target="#carouselBasicExample" data-mdb-slide="next">
-            <span className="carousel-control-next-icon" aria-hidden="true"></span>
-            <span className="visually-hidden">Next</span>
-          </button>
-        </div>
-      </CarruselWrapper>
-    </ContenedorPrincipal>
-  );
-}
+        {/* Aquí agregamos las rutas */}
+      </ContenedorPrincipal>
+    );
+  }
