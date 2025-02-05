@@ -17,9 +17,10 @@ import ListadoFestivales from "./componentes/ListadoFestival";
 import ModificarFestival from "./componentes/ModificarFestival";
 import AltaActividad from "./componentes/AltaActividad";
 //ACTIVIDAD
-/*
-import ListadoActividades from "./componentes/ListadoActividad";
 
+import BuscarActividad from "./componentes/BuscarActividad";
+import ListadoActividades from "./componentes/ListadoActividades";  
+/*
 import ModificarActividad from "./componentes/ModificarActividad";
 
 "*/
@@ -48,16 +49,16 @@ let router = createBrowserRouter([
         path: "altaactividad",
         element: <AltaActividad />,
       },
-      /*
+      
+      {
+        path: "buscarActividad",
+        element: <BuscarActividad />,
+      },
       {
         path: "listadoactividades",
         element: <ListadoActividades />,
       },
-      {
-        path: "modificaractividad/:idactividad",
-        element: <ModificarActividad />,
-      },
-      */
+      
     ],
   },
 ]);

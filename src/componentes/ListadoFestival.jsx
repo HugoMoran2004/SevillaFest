@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import swal from 'sweetalert';
 import { useNavigate } from "react-router";
 import { apiUrl } from "../config";
+import PageviewIcon from '@mui/icons-material/Pageview';
 
 
 function ListadoFestivales() {
@@ -44,8 +45,13 @@ function ListadoFestivales() {
                 setRows(data.datos);
             }
         }
+        
 
         getFestivales();
+        document.body.style.backgroundColor = "#f0f0f0";
+      return () => {
+        document.body.style.backgroundColor = "";
+      }
     }, []); // Se ejecuta solo en el primer renderizado
 
     const handleDelete = async (idFestival) => {
@@ -130,18 +136,18 @@ function ListadoFestivales() {
                 Festivales 
             </Typography>
 
-            <Box sx={{ mx: 4 }}>
+            <Box sx={{ mx: 4, mt: 8, mb: 4 }}>
                 <TableContainer component={Paper} sx={{ mt: 2 }}>
                     <Table aria-label="simple table">
                         <TableHead>
                             <TableRow>
                                 <TableCell align="right">ID</TableCell>
-                                <TableCell>NOMBRE</TableCell>
-                                <TableCell>CIUDAD</TableCell>
-                                <TableCell>Entradas</TableCell>
-                                <TableCell>PRECIO</TableCell>
-                                <TableCell>FECHA INICIO</TableCell>
-                                <TableCell>FECHA FIN</TableCell>
+                                <TableCell align="center">NOMBRE</TableCell>
+                                <TableCell align="center">CIUDAD</TableCell>
+                                <TableCell align="center">Entradas</TableCell>
+                                <TableCell align="center">PRECIO</TableCell>
+                                <TableCell align="center">FECHA INICIO</TableCell>
+                                <TableCell align="center">FECHA FIN</TableCell>
                                 <TableCell align="center">ELIMINAR</TableCell>
                                 <TableCell align="center">EDITAR</TableCell>
                                 <TableCell align="center">VER ACTIVIDADES</TableCell>
@@ -154,32 +160,37 @@ function ListadoFestivales() {
                                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                                 >
                                     <TableCell align="right">{row.idFestival}</TableCell>
-                                    <TableCell>{row.nombre}</TableCell>
-                                    <TableCell>{row.ciudad}</TableCell>
-                                    <TableCell>{row.numEntradas}</TableCell>
-                                    <TableCell align="right">{row.precio + " €"}</TableCell>
-                                    <TableCell>{row.fechaInicio}</TableCell>
-                                    <TableCell>{row.fechaFin}</TableCell>
-                                    <TableCell>
+                                    <TableCell align="center">{row.nombre}</TableCell>
+                                    <TableCell align="center">{row.ciudad}</TableCell>
+                                    <TableCell align="center">{row.numEntradas}</TableCell>
+                                    <TableCell  align="center">{row.precio + " €"}</TableCell>
+                                    <TableCell align="center">{row.fechaInicio}</TableCell>
+                                    <TableCell align="center">{row.fechaFin}</TableCell>
+                                    <TableCell align="center">
                                         <Button
                                             variant="contained"
+                                            
                                             onClick={() => handleDelete(row.idFestival)}
                                             color="error"
                                         >
-                                            <DeleteForeverIcon fontSize="small" />
+                                            <DeleteForeverIcon fontSize="medium" />
                                         </Button>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell align="center">
                                         <Button
                                             variant="contained"
+                                            
                                             onClick={() => navigate("/modificarfestival/" + row.idFestival)}
                                         >
-                                            <EditNoteIcon fontSize="small" />
+                                            <EditNoteIcon fontSize="medium" />
                                         </Button>
                                     </TableCell>
-                                    <TableCell>
-                                        <Button onClick={() => handleFestivalClick(row.idFestival, row.nombre)}>
-                                            Actividades
+                                    <TableCell align="center">
+                                        <Button 
+                                        variant="contained" 
+                                        color= "success"
+                                        onClick={() => handleFestivalClick(row.idFestival, row.nombre)}>
+                                            <PageviewIcon fontSize="medium" />
                                         </Button>
                                     </TableCell>
                                 </TableRow>
@@ -190,24 +201,24 @@ function ListadoFestivales() {
             </Box>
             {/* Mostrar actividades si el festival está seleccionado y expandido */}
             {expandido && festivalSeleccionado && (
-                <Box sx={{ mt: 2, mx: 4 }}>
+                <Box sx={{ mt: 2, mx: 4, mb: 4 }}>
                     <Typography variant="h6">{festivalNombre} :</Typography>
                     <TableContainer component={Paper} sx={{ mt: 2 }}>
                         <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>NOMBRE</TableCell>
-                                    <TableCell>DURACION</TableCell>
-                                    <TableCell>DESCRIPCIÓN</TableCell>
+                                    <TableCell align="center">NOMBRE</TableCell>
+                                    <TableCell align="center">DURACION</TableCell>
+                                    <TableCell align="center">DESCRIPCIÓN</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {actividades.length > 0 ? (
                                     actividades.map((actividad) => (
                                         <TableRow key={actividad.idActividad}>
-                                            <TableCell>{actividad.nombre}</TableCell>
-                                            <TableCell>{actividad.duracion}</TableCell>
-                                            <TableCell>{actividad.descripcion}</TableCell>
+                                            <TableCell align="center">{actividad.nombre}</TableCell>
+                                            <TableCell align="center">{actividad.duracion}</TableCell>
+                                            <TableCell align="center">{actividad.descripcion}</TableCell>
                                         </TableRow>
                                     ))
                                 ) : (

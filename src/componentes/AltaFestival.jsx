@@ -8,7 +8,7 @@ import {
 import Grid from "@mui/material/Grid2";
 
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Send from "@mui/icons-material/Send";
 import { useNavigate } from "react-router";
 import { apiUrl } from "../config"; // Importamos las variables de entorno
@@ -52,7 +52,12 @@ function AltaFestival() {
     setOpen(false);
   };
 
-
+useEffect(() => {
+  document.body.style.backgroundColor = "#f0f0f0";
+      return () => {
+        document.body.style.backgroundColor = "";
+      };
+    }, []);
 
   // Enviamos los datos mediante fetch
   const handleSubmit = async (e) => {
@@ -193,7 +198,7 @@ function AltaFestival() {
   return (
     
   <>
-    <Typography variant="h4" align="center" sx={{ mt: 4 }}>  {/* Aumenté el margen superior aquí */}
+    <Typography variant="h4" align="center" sx={{ mt: 2 }}>  {/* Aumenté el margen superior aquí */}
   Alta de Festivales
 </Typography>
 <Grid container spacing={2} sx={{ mt: 10, mb:10, justifyContent: "center", alignItems: "center" }}> {/* Y también aquí */}

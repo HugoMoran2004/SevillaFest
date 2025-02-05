@@ -58,6 +58,10 @@ function AltaActividad() {
       .catch((error) => {
         console.error("Error al obtener festivales:", error);
       });
+      document.body.style.backgroundColor = "#f0f0f0";
+      return () => {
+        document.body.style.backgroundColor = "";
+      }
   }, []);
 
   // 🔹 Manejar cambios en los campos del formulario
@@ -158,13 +162,16 @@ function AltaActividad() {
   }
 
   return (
+    
     <Container
       maxWidth="sm"
+      
       sx={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
+        
       }}
     >
       <Card elevation={6} sx={{ width: "100%", borderRadius: 3, p: 2 }}>
@@ -291,6 +298,7 @@ function AltaActividad() {
         </CardContent>
       </Card>
     </Container>
+    
   );
 }
 

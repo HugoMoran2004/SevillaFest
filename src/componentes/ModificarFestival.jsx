@@ -1,4 +1,5 @@
-import { Typography, TextField, Stack, Button, Snackbar,Alert } from "@mui/material";
+import { Typography, TextField, Stack, Button, Snackbar, Alert, Box } from "@mui/material";
+import Send from '@mui/icons-material/Send';
 import Grid from "@mui/material/Grid2";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router";
@@ -35,14 +36,14 @@ function ModificarFestival() {
     });
 
     const navigate = useNavigate();
-    const [openSnackbar, setOpenSnackbar] = useState(false); 
+    const [openSnackbar, setOpenSnackbar] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState("");
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
-          return;
+            return;
         }
         setOpenSnackbar(false);
-      };
+    };
 
     useEffect(() => {
         if (!params.idFestival) {
@@ -70,6 +71,10 @@ function ModificarFestival() {
         }
 
         getFestivalById();
+        document.body.style.backgroundColor = "#f0f0f0";
+      return () => {
+        document.body.style.backgroundColor = "";
+      }
     }, []); // Se ejecuta solo en el primer renderizado
 
     const handleSubmit = async (e) => {
@@ -215,7 +220,7 @@ function ModificarFestival() {
             <Grid
                 container
                 spacing={2}
-                sx={{ mt: 2, justifyContent: "center", alignItems: "center" }}
+                sx={{ mt: 10, mb: 10, justifyContent: "center", alignItems: "center" }}
             >
                 <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                     <Stack
@@ -299,18 +304,36 @@ function ModificarFestival() {
                                 }
                             />
                         </LocalizationProvider>
-                        <Button variant="contained" type="submit">
-                            Aceptar
-                        </Button>
+                        <Box sx={{ mx: "auto" }}>
+                            <Button
+                                variant="contained"
+                                type="submit"
+                                size="small"
+                                startIcon={<Send />}
+                                fullWidth
+                                sx={{
+                                    py: 1,
+                                    px: 2,
+                                    borderRadius: 4,
+                                    fontSize: 16,
+                                    backgroundColor: "#004d40", // Color del fondo normal
+                                    "&:hover": {
+                                        backgroundColor: "#a5d6a7", // Color del fondo al hacer hover
+                                    },
+                                }}
+                            >
+                                Aceptar
+                            </Button>
+                        </Box>
                     </Stack>
                 </Grid>
             </Grid>
 
             <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleClose}>
-                          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                            {snackbarMessage}
-                          </Alert>
-                        </Snackbar>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </>
     );
 }

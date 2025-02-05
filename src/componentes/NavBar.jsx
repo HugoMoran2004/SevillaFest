@@ -11,6 +11,8 @@ import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from
 import { Link } from 'react-router';
 import Typography from '@mui/material/Typography';
 import logo from '../assets/images/sevillafest.png';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Brightness4, Brightness7 } from '@mui/icons-material'; 
 
 const anchoDrawer = 240;
 
@@ -33,6 +35,13 @@ const SeccionMenu = styled(Box)({
   backgroundColor: '#004d40',
   borderRadius: '8px',
   marginBottom: '1rem',
+  '& .nav-link': {
+    color: 'white', // Texto blanco por defecto
+    fontWeight: 'bold',
+    '&:hover': {
+      color: '#a5d6a7', // Mismo color que los items del dropdown al hacer hover
+    },
+  },
 });
 
 const ItemDropdownPersonalizado = styled(MDBDropdownItem)({
@@ -84,8 +93,49 @@ const BotonDropdownPersonalizado = styled(MDBDropdownToggle)({
   },
 });
 
+
+
+const temaClaro = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#004d40',
+    },
+    secondary: {
+      main: '#a5d6a7',
+    },
+    background: {
+      default: '#fafafa', // Fondo claro para el modo claro
+    },
+    text: {
+      primary: '#000',
+    },
+  },
+});
+
+// Tema oscuro
+const temaOscuro = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: '#004d40',
+    },
+    secondary: {
+      main: '#a5d6a7',
+    },
+    background: {
+      default: '#121212',
+    },
+    text: {
+      primary: '#fff',
+    },
+  },
+});
+
+
 export default function DrawerMini() {
   const [drawerAbierto, setDrawerAbierto] = useState(false);
+  const [modoOscuro, setModoOscuro] = useState(false);
 
   // Alterna el estado del Drawer
   const manejarDrawer = () => {
@@ -97,7 +147,20 @@ export default function DrawerMini() {
     setDrawerAbierto(false); // Cerrar el Drawer al cambiar de ruta
   }, [window.location.pathname]); // Monitorear los cambios en la ruta
 
+  const manejarCambioModo = () => {
+    setModoOscuro(!modoOscuro);
+  };
+
+  useEffect(() => {
+    if (modoOscuro) {
+      document.body.style.backgroundColor = '#3b4946'; // Fondo oscuro
+    } else {
+      document.body.style.backgroundColor = '#fafafa'; // Fondo claro
+    }
+  }, [modoOscuro]);
+
   return (
+    <ThemeProvider theme={modoOscuro ? temaOscuro : temaClaro}>
     <ContenedorPrincipal>
       <BarraPersonalizada position="fixed">
         <Toolbar>
@@ -115,6 +178,11 @@ export default function DrawerMini() {
           <Typography variant="h6" noWrap component="div" style={{ flexGrow: 1, textAlign: 'center' }}>
             Sevilla Fest
           </Typography>
+
+          <IconButton color="inherit" onClick={manejarCambioModo}>
+              {modoOscuro ? <Brightness7 /> : <Brightness4 />}
+            </IconButton>
+
         </Toolbar>
       </BarraPersonalizada>
       <Drawer
@@ -157,14 +225,15 @@ export default function DrawerMini() {
               <Link to="/altaactividad" style={{ color: 'white' }}>
                 <ItemDropdownPersonalizado link>Alta de actividades</ItemDropdownPersonalizado>
               </Link>
-              <Link to="/listadoactividades" style={{ color: 'white' }}>
-                <ItemDropdownPersonalizado link>Listado de actividades</ItemDropdownPersonalizado>
+              <Link to="/buscaractividad" style={{ color: 'white' }}>
+                <ItemDropdownPersonalizado link>Buscar Actividad</ItemDropdownPersonalizado>
               </Link>
             </MenuDropdownPersonalizado>
           </MDBDropdown>
         </SeccionMenu>
       </Drawer>
-        {/* Aquí agregamos las rutas */}
+      
       </ContenedorPrincipal>
+      </ThemeProvider>
     );
   }
