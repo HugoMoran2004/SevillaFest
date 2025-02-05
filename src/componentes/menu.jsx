@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+//import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+const ContenedorPrincipal = styled(Box)({ display: 'flex' });
+/*import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,7 +13,6 @@ import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from
 import { Link } from 'react-router';
 import Typography from '@mui/material/Typography';
 import logo from '../assets/images/logo.png.webp';
-
 const anchoDrawer = 240;
 
 const ContenedorPrincipal = styled(Box)({ display: 'flex' });
@@ -74,7 +75,7 @@ const BotonDropdownPersonalizado = styled(MDBDropdownToggle)({
   '&:active': {
     backgroundColor: '#004d40',
   },
-});
+});*/
 
 // Carrusel
 const CarruselWrapper = styled('div')({
@@ -86,83 +87,17 @@ const CarruselWrapper = styled('div')({
 });
 
 export default function DrawerMini() {
-  const [drawerAbierto, setDrawerAbierto] = useState(false);
+  
 
   // Alterna el estado del Drawer
-  const manejarDrawer = () => {
-    setDrawerAbierto(!drawerAbierto);
-  };
+ 
 
   // Cierra el Drawer cuando cambia la ruta
-  useEffect(() => {
-    setDrawerAbierto(false); // Cerrar el Drawer al cambiar de ruta
-  }, [window.location.pathname]);
+ 
 
   return (
     <ContenedorPrincipal>
-      <BarraPersonalizada position="fixed">
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="abrir drawer"
-            edge="start"
-            onClick={manejarDrawer}
-          >
-            <MenuIcon />
-          </IconButton>
-          <img src={logo} alt="Logo" style={{ width: 60, marginRight: 10 }} />
-          <Typography variant="h6" noWrap component="div" style={{ flexGrow: 1, textAlign: 'center' }}>
-            Panel de Gestión
-          </Typography>
-        </Toolbar>
-      </BarraPersonalizada>
-      <Drawer
-        variant="temporary"
-        anchor="left"
-        open={drawerAbierto}
-        onClose={manejarDrawer} // Cerrar el drawer al hacer clic fuera
-        sx={{
-          '& .MuiDrawer-paper': { width: anchoDrawer, boxSizing: 'border-box', backgroundColor: '#004d40' },
-        }}
-      >
-        <EncabezadoDrawer>
-          <IconButton onClick={manejarDrawer}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </EncabezadoDrawer>
-
-        <SeccionMenu style={{ marginTop: '2rem' }}>
-          <MDBDropdown>
-            <BotonDropdownPersonalizado tag="a" className="nav-link" role="button">
-              Festivales
-            </BotonDropdownPersonalizado>
-            <MenuDropdownPersonalizado>
-              <Link to="/altafestival" style={{ color: 'white' }}>
-                <ItemDropdownPersonalizado link>Alta de festivales</ItemDropdownPersonalizado>
-              </Link>
-              <Link to="/listadofestivales" style={{ color: 'white' }}>
-                <ItemDropdownPersonalizado link>Listado de festivales</ItemDropdownPersonalizado>
-              </Link>
-            </MenuDropdownPersonalizado>
-          </MDBDropdown>
-        </SeccionMenu>
-
-        <SeccionMenu>
-          <MDBDropdown>
-            <BotonDropdownPersonalizado tag="a" className="nav-link" role="button">
-              Actividades
-            </BotonDropdownPersonalizado>
-            <MenuDropdownPersonalizado>
-              <Link to="/altaactividad" style={{ color: 'white' }}>
-                <ItemDropdownPersonalizado link>Alta de actividades</ItemDropdownPersonalizado>
-              </Link>
-              <Link to="/listadoactividades" style={{ color: 'white' }}>
-                <ItemDropdownPersonalizado link>Listado de actividades</ItemDropdownPersonalizado>
-              </Link>
-            </MenuDropdownPersonalizado>
-          </MDBDropdown>
-        </SeccionMenu>
-      </Drawer>
+      
 
       {/* Aquí agregamos el Carrusel */}
       <CarruselWrapper>

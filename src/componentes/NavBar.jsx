@@ -10,7 +10,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { MDBDropdown, MDBDropdownToggle, MDBDropdownMenu, MDBDropdownItem } from 'mdb-react-ui-kit';
 import { Link } from 'react-router';
 import Typography from '@mui/material/Typography';
-import logo from '../assets/images/logo.png.webp';
+import logo from '../assets/images/sevillafest.png';
 
 const anchoDrawer = 240;
 
@@ -109,9 +109,11 @@ export default function DrawerMini() {
           >
             <MenuIcon />
           </IconButton>
-          <img src={logo} alt="Logo" style={{ width: 60, marginRight: 10 }} />
+          <Link to="/" style={{ textDecoration: 'none'}}>
+          <img src={logo} alt="Logo" style={{ width: 80, marginLeft: 5 }} />
+          </Link>
           <Typography variant="h6" noWrap component="div" style={{ flexGrow: 1, textAlign: 'center' }}>
-            Panel de Gestión
+            Sevilla Fest
           </Typography>
         </Toolbar>
       </BarraPersonalizada>

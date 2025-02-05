@@ -1,16 +1,27 @@
-import { Typography, TextField, Stack, Button, FormControl, Select, InputLabel, MenuItem, Alert } from "@mui/material";
+import {
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem,
+  Alert,
+  Card,
+  CardContent,
+  Container,
+  Box,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Snackbar } from '@mui/material';
-import swal from 'sweetalert';
+import { Snackbar } from "@mui/material";
+import swal from "sweetalert";
 // Importamos las variables de entorno
-import { apiUrl } from '../config';
-
+import { apiUrl } from "../config";
+import Send from "@mui/icons-material/Send";
 
 function AltaActividad() {
-
-
   const [open, setOpen] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [festivales, setFestivales] = useState([]); // Lista de festivales
@@ -31,7 +42,7 @@ function AltaActividad() {
   const navigate = useNavigate();
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setOpen(false);
@@ -40,8 +51,7 @@ function AltaActividad() {
   // 🔹 Cargar la lista de festivales desde la API al montar el componente
   useEffect(() => {
     fetch(apiUrl + "/festival") // Reemplaza con tu URL de API
-      .then((response) =>
-        response.json())  // Convertimos la respuesta a JSON
+      .then((response) => response.json()) // Convertimos la respuesta a JSON
       .then((data) => {
         setFestivales(data.datos);
       })
@@ -75,22 +85,21 @@ function AltaActividad() {
         if (response.ok) {
           const respuesta = await response.json();
           if (respuesta.ok) {
-          swal({
-            title: "Crear Actividad",
-            text: "¿Deseas crear esta actividad?",
-            icon: "info",
-            buttons: ["Cancelar", "Aceptar"],
-          }). then((respuesta) => {
-            if (respuesta) {
-              navigate("/"); // Volver a la página principal
-              swal({
-              text:"Actividad creada correctamente",
-              icon: "success"
+            swal({
+              title: "Crear Actividad",
+              text: "¿Deseas crear esta actividad?",
+              icon: "info",
+              buttons: ["Cancelar", "Aceptar"],
+            }).then((respuesta) => {
+              if (respuesta) {
+                navigate("/"); // Volver a la página principal
+                swal({
+                  text: "Actividad creada correctamente",
+                  icon: "success",
+                });
+              }
             });
-            }
           }
-          );
-        }
         }
       } catch (error) {
         console.error("Error:", error);
@@ -98,14 +107,12 @@ function AltaActividad() {
         setMensaje("Error en la conexión al servidor");
         setOpen(true); // Abre el Snackbar
       }
-    } else{
+    } else {
       setMensaje("Error en el formulario. Revise los campos");
       setOpen(true);
     }
-
-  }
+  };
   // Enviamos los datos mediante fetch
-
 
   function validarDatos() {
     let validado = true;
@@ -122,8 +129,8 @@ function AltaActividad() {
       validacionAux.nombre = true;
       validado = false;
     }
-     // VALIDAR duracion
-    /*const duracion = Number(datos.duracion);
+    // VALIDAR duracion
+  /*const duracion = Number(datos.duracion);
     if (duracion < 40 || !isNaN(duracion)) {
       validacionAux.duracion = true;
       validado = false;
@@ -135,8 +142,6 @@ function AltaActividad() {
       validado = false;
     }
 
-   
-    
     // VALIDAR PRECIO
     if (!isNaN(datos.imagenActividad)) {
       validacionAux.imagenActividad = true;
@@ -152,97 +157,141 @@ function AltaActividad() {
     return validado;
   }
 
-
   return (
-    <>
-      <Typography variant="h4" align="center" sx={{ mt: 2 }}>
-        Alta de Actividades
-      </Typography>
-      <Grid
-        container
-        spacing={2}
-        sx={{ mt: 2, justifyContent: "center", alignItems: "center" }}
-      >
-        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-          <Stack
-            component="form"
-            spacing={2}
-            onSubmit={handleSubmit}
-            sx={{ mx: 2 }}
-          >
-            <TextField
-              id="outlined-basic"
-              label="Nombre"
-              variant="outlined"
-              name="nombre"
-              value={datos.nombre}
-              onChange={handleChange}
-              error={validacion.nombre}
-              helperText={validacion.nombre && "Nombre incorrecto. Mínimo 2 caracteres"}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Duracion"
-              variant="outlined"
-              name="duracion"
-              type="number"
-              value={datos.duracion}
-              //error={validacion.duracion}
-              onChange={handleChange}
-              //helperText={validacion.duracion && "Duracion requerida. Mínimo 40 minutos"}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Descripcion"
-              variant="outlined"
-              name="descripcion"
-              value={datos.descripcion}
-              error={validacion.descripcion}
-              onChange={handleChange}
-              helperText={validacion.descripcion && "Descripcion requerida. Mínimo 4 caracteres"}
-            />
-            <TextField
-              id="outlined-basic"
-              label="Imagen Actividad"
-              variant="outlined"
-              name="imagenActividad"
-              value={datos.imagenActividad}
-              error={validacion.imagenActividad}
-              onChange={handleChange}
-              helperText={validacion.imagenActividad && "Imagen requerida"}
-            />
-            {/* Desplegable para seleccionar un festival */}
+    <Container
+      maxWidth="sm"
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+      }}
+    >
+      <Card elevation={6} sx={{ width: "100%", borderRadius: 3, p: 2 }}>
+        <CardContent>
+          <Typography variant="h4" align="center" gutterBottom>
+            Alta de Actividades
+          </Typography>
+
+          <Grid container spacing={3} component="form" onSubmit={handleSubmit}>
+            <Grid item xs={12}>
+              <TextField
+                label="Nombre"
+                variant="outlined"
+                name="nombre"
+                value={datos.nombre}
+                onChange={handleChange}
+                error={validacion.nombre}
+                helperText={validacion.nombre && "Mínimo 2 caracteres"}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Duración (minutos)"
+                variant="outlined"
+                name="duracion"
+                type="number"
+                value={datos.duracion}
+                onChange={handleChange}
+                /*error={validacion.duracion}
+                helperText={validacion.duracion && "Mínimo 40 minutos"}*/
+                fullWidth
+                sx={{ mr: 5 }}
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Descripción"
+                variant="outlined"
+                name="descripcion"
+                value={datos.descripcion}
+                onChange={handleChange}
+                error={validacion.descripcion}
+                helperText={validacion.descripcion && "Mínimo 4 caracteres"}
+                fullWidth
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                label="Imagen Actividad (URL)"
+                variant="outlined"
+                name="imagenActividad"
+                value={datos.imagenActividad}
+                onChange={handleChange}
+                error={validacion.imagenActividad}
+                helperText={validacion.imagenActividad && "Campo Requerido"}
+                fullWidth
+                sx={{ mr: 5 }}
+              />
+            </Grid>
+
             <FormControl fullWidth>
               <InputLabel>Festival</InputLabel>
               <Select
+                label="Festival"
                 name="idFestival"
                 value={datos.idFestival}
                 onChange={handleChange}
-                error={validacion.idFestival}
-                label="Festival"
-                //helperText={validacion.idFestival && "Festival requerido"}
+                fullWidth
+                sx={{
+                  "& .MuiSelect-select": {
+                    height: "56px", // Asegura que el select se vea grande
+                  },
+                }}
               >
                 {festivales.map((festival) => (
-                  <MenuItem key={festival.idFestival} value={festival.idFestival}>
+                  <MenuItem
+                    key={festival.idFestival}
+                    value={festival.idFestival}
+                  >
                     {festival.nombre} - {festival.ciudad}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <Button variant="contained" type="submit">
-              Aceptar
-            </Button>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                          <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
-                            {mensaje}
-                          </Alert>
-                        </Snackbar>
-          </Stack>
-        </Grid>
-      </Grid>
-    </>
-  );
 
+            {/* Botón debajo del Select */}
+
+            <Box sx={{mx : "auto"}}>
+              <Button
+                variant="contained"
+                type="submit"
+                size="small"
+                startIcon={<Send />}
+                fullWidth
+                sx={{
+                  py: 1,
+                  px: 2,
+                  borderRadius: 4,
+                  fontSize: 16,
+                  backgroundColor: "#004d40", // Color del fondo normal
+                  "&:hover": {
+                    backgroundColor: "#a5d6a7", // Color del fondo al hacer hover
+                  },
+                }}
+              >
+                Enviar
+              </Button>
+            </Box>
+          </Grid>
+
+          <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+            <Alert
+              onClose={handleClose}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              {mensaje}
+            </Alert>
+          </Snackbar>
+        </CardContent>
+      </Card>
+    </Container>
+  );
 }
 
 export default AltaActividad;
