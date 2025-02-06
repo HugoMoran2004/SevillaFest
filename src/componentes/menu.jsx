@@ -1,4 +1,4 @@
-//import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 //import { styled } from '@mui/material/styles';
 //import Box from '@mui/material/Box';
 import festival from '../assets/images/festivalGente.jpg';
@@ -34,6 +34,13 @@ export default function DrawerMini() {
 
 
   // Cierra el Drawer cuando cambia la ruta
+
+  useEffect(() => {
+    document.body.style.backgroundColor = "#f0f0f0";
+      return () => {
+        document.body.style.backgroundColor = "";
+      }
+  },[]);
 
 
   return (
